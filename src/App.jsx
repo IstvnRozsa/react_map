@@ -124,8 +124,12 @@ function App() {
   const [zoomInput, setZoomInput] = useState('13')
   const [kmlData, setKmlData] = useState(null)
   const [csvRows, setCsvRows] = useState([])
+  const [csvColumns, setCsvColumns] = useState([]) // Store all column names except 'id'
   const [selectedMetric, setSelectedMetric] = useState('revenue')
+  const [selectedPopupColumns, setSelectedPopupColumns] = useState([]) // Columns to show in popup
   const [mapTheme, setMapTheme] = useState('positron')
+  // Store feature index to ID mapping for reliable matching
+  const [featureIdMap, setFeatureIdMap] = useState(new Map())
 
   // Debug: log when kmlData or csvRows change
   useEffect(() => {
@@ -207,6 +211,9 @@ function App() {
           }
         })
         
+        // Create a map of feature index to ID for reliable matching
+        const idMap = new Map()
+        
         // Add IDs to GeoJSON features
         if (geojson.features && geojson.features.length > 0) {
           geojson.features.forEach((feature, index) => {
@@ -227,20 +234,29 @@ function App() {
               }
               feature.properties.id = id
               feature.properties.placemarkId = id // Extra backup
+              // Store in our map using feature index as key
+              idMap.set(index, id)
             }
             
             // Also try to preserve any existing ID
             if (!feature.id && feature.properties?.id) {
               feature.id = feature.properties.id
+              idMap.set(index, feature.properties.id)
             }
           })
           
+          // Store the ID mapping
+          setFeatureIdMap(idMap)
+          
           // Debug: log the IDs we extracted
           console.log('Extracted Placemark data:', placemarkData)
-          console.log('GeoJSON features with IDs:', geojson.features.map(f => ({
+          console.log('Feature ID Map:', Array.from(idMap.entries()))
+          console.log('GeoJSON features with IDs:', geojson.features.map((f, idx) => ({
+            index: idx,
             name: f.properties?.name || f.properties?.Name,
             id: f.id || f.properties?.id,
-            propertiesId: f.properties?.id
+            propertiesId: f.properties?.id,
+            mappedId: idMap.get(idx)
           })))
         }
         
@@ -272,29 +288,61 @@ function App() {
 
         const header = lines[0].split(',').map((h) => h.trim())
         const idIndex = header.indexOf('id')
-        const revenueIndex = header.indexOf('revenue')
-        const costIndex = header.indexOf('cost')
 
-        if (idIndex === -1 || revenueIndex === -1 || costIndex === -1) {
-          message.error('CSV must contain id, revenue and cost columns')
+        if (idIndex === -1) {
+          message.error('CSV must contain an "id" column to match with KML data')
           return
+        }
+
+        // Get all columns except 'id'
+        const otherColumns = header.filter((col, idx) => idx !== idIndex)
+        setCsvColumns(otherColumns)
+
+        // Helper function to check if a value is numeric
+        const isNumeric = (value) => {
+          const num = Number(value)
+          return !isNaN(num) && isFinite(num) && value !== ''
         }
 
         const rows = lines.slice(1).map((line) => {
           const cols = line.split(',').map((c) => c.trim())
-          return {
+          const row = {
             id: cols[idIndex],
-            revenue: Number(cols[revenueIndex]),
-            cost: Number(cols[costIndex]),
           }
+          
+          // Dynamically add all other columns
+          otherColumns.forEach((colName, idx) => {
+            const colIndex = header.indexOf(colName)
+            if (colIndex !== -1) {
+              const value = cols[colIndex] || ''
+              // Try to convert to number if it's numeric, otherwise keep as string
+              row[colName] = isNumeric(value) ? Number(value) : value
+            }
+          })
+          
+          return row
+        })
+
+        // Find numeric columns for color-by selector
+        const numericColumns = otherColumns.filter(col => {
+          return rows.some(row => typeof row[col] === 'number' && !isNaN(row[col]))
         })
 
         setCsvRows(rows)
-        // Reset metric to revenue when new CSV is uploaded
-        setSelectedMetric('revenue')
-        // Debug: log CSV IDs
-        console.log('CSV rows loaded:', rows.map(r => ({ id: r.id, revenue: r.revenue, cost: r.cost })))
-        message.success('CSV file loaded successfully')
+        // Set default metric to first numeric column, or first column if no numeric columns
+        const defaultMetric = numericColumns.length > 0 ? numericColumns[0] : (otherColumns[0] || '')
+        setSelectedMetric(defaultMetric)
+        // Set default popup columns to all columns
+        setSelectedPopupColumns(otherColumns)
+        
+        // Debug: log CSV structure
+        console.log('CSV loaded:', {
+          columns: otherColumns,
+          numericColumns,
+          sampleRow: rows[0],
+          totalRows: rows.length
+        })
+        message.success(`CSV file loaded successfully (${rows.length} rows, ${otherColumns.length} columns)`)
       } catch (error) {
         console.error('Error parsing CSV:', error)
         message.error('Failed to parse CSV file. Please check the file format.')
@@ -310,10 +358,14 @@ function App() {
     csvIdMap.set(row.id, row)
   })
 
+  // Calculate metric values for color scaling (only for numeric columns)
   const metricValues =
-    csvRows.length > 0
+    csvRows.length > 0 && selectedMetric
       ? csvRows
-          .map((row) => Number(row[selectedMetric]))
+          .map((row) => {
+            const value = row[selectedMetric]
+            return typeof value === 'number' ? value : Number(value)
+          })
           .filter((v) => Number.isFinite(v))
       : []
 
@@ -374,8 +426,15 @@ function App() {
               accept=".kml"
               beforeUpload={handleKmlUpload}
               showUploadList={false}
+              disabled={csvRows.length === 0}
             >
-              <Button icon={<UploadOutlined />}>Upload KML file</Button>
+              <Button 
+                icon={<UploadOutlined />} 
+                disabled={csvRows.length === 0}
+                title={csvRows.length === 0 ? 'Please upload CSV file first' : 'Upload KML file'}
+              >
+                Upload KML file
+              </Button>
             </Upload>
             
             {kmlData && (
@@ -394,22 +453,53 @@ function App() {
               <Button icon={<UploadOutlined />}>Upload CSV file</Button>
             </Upload>
 
-            {csvRows.length > 0 && (
-              <Space>
-                <Typography.Text type="secondary">
-                  Color by
-                </Typography.Text>
-                <Select
-                  value={selectedMetric}
-                  onChange={setSelectedMetric}
-                  style={{ width: 160 }}
-                  options={[
-                    { value: 'revenue', label: 'Revenue' },
-                    { value: 'cost', label: 'Cost' },
-                  ]}
-                />
-              </Space>
-            )}
+            {csvRows.length > 0 && csvColumns.length > 0 && (() => {
+              // Find numeric columns for color-by selector
+              const numericColumns = csvColumns.filter(col => {
+                return csvRows.some(row => typeof row[col] === 'number' && !isNaN(row[col]))
+              })
+              
+              return (
+                <>
+                  {/* Color by selector - single numeric column */}
+                  {numericColumns.length > 0 && (
+                    <Space>
+                      <Typography.Text type="secondary">
+                        Color by
+                      </Typography.Text>
+                      <Select
+                        value={selectedMetric}
+                        onChange={setSelectedMetric}
+                        style={{ width: 180 }}
+                        options={numericColumns.map(col => ({
+                          value: col,
+                          label: col.charAt(0).toUpperCase() + col.slice(1).replace(/_/g, ' '),
+                        }))}
+                      />
+                    </Space>
+                  )}
+                  
+                  {/* Popup columns selector - multiple columns */}
+                  <Space>
+                    <Typography.Text type="secondary">
+                      Show in popup
+                    </Typography.Text>
+                    <Select
+                      mode="multiple"
+                      value={selectedPopupColumns}
+                      onChange={setSelectedPopupColumns}
+                      style={{ width: 250 }}
+                      placeholder="Select columns"
+                      maxTagCount="responsive"
+                      options={csvColumns.map(col => ({
+                        value: col,
+                        label: col.charAt(0).toUpperCase() + col.slice(1).replace(/_/g, ' '),
+                      }))}
+                    />
+                  </Space>
+                </>
+              )
+            })()}
 
             <Space>
               <Typography.Text type="secondary">
@@ -472,12 +562,13 @@ function App() {
           <GeoJSON
             data={kmlData}
             style={(feature) => {
-              // Try multiple ways to get the ID
+              // Try multiple ways to get the ID - check properties first as it's most reliable
               const featureId =
-                feature?.id || 
                 feature?.properties?.id ||
+                feature?.properties?.placemarkId ||
                 feature?.properties?.Id ||
-                feature?.properties?.ID
+                feature?.properties?.ID ||
+                feature?.id
 
               // Use the map for faster lookup
               const csvRow = featureId ? csvIdMap.get(featureId) : null
@@ -511,22 +602,34 @@ function App() {
               }
             }}
             onEachFeature={(feature, layer) => {
-              // Try multiple ways to get the ID
+              // Try multiple ways to get the ID - check properties first as it's most reliable
               const featureId =
-                feature?.id || 
                 feature?.properties?.id ||
+                feature?.properties?.placemarkId ||
                 feature?.properties?.Id ||
-                feature?.properties?.ID
+                feature?.properties?.ID ||
+                feature?.id
 
               // Use the map for faster lookup
               const csvRow = featureId ? csvIdMap.get(featureId) : null
 
-              // Debug logging (only log mismatches)
-              if (featureId && csvRows.length > 0 && !csvRow) {
-                console.log('No CSV match found:', {
+              // Debug logging
+              if (csvRows.length > 0) {
+                console.log('onEachFeature:', {
                   featureId,
                   featureName: feature?.properties?.name || feature?.properties?.Name,
-                  availableIds: Array.from(csvIdMap.keys())
+                  hasCsvRow: !!csvRow,
+                  allFeatureProps: Object.keys(feature?.properties || {}),
+                  csvIds: Array.from(csvIdMap.keys())
+                })
+              }
+              
+              if (featureId && csvRows.length > 0 && !csvRow) {
+                console.warn('⚠️ No CSV match found:', {
+                  featureId,
+                  featureName: feature?.properties?.name || feature?.properties?.Name,
+                  availableIds: Array.from(csvIdMap.keys()),
+                  featureProperties: feature?.properties
                 })
               }
 
@@ -536,8 +639,39 @@ function App() {
               if (csvRow) {
                 // Format numbers with thousand separators
                 const formatNumber = (num) => {
-                  return Number(num).toLocaleString('en-US')
+                  if (typeof num === 'number' && !isNaN(num)) {
+                    return num.toLocaleString('en-US')
+                  }
+                  return num
                 }
+
+                // Format column name for display
+                const formatColumnName = (colName) => {
+                  return colName.charAt(0).toUpperCase() + colName.slice(1).replace(/_/g, ' ')
+                }
+
+                // Build dynamic content for selected columns only
+                const columnContent = selectedPopupColumns
+                  .filter(col => csvColumns.includes(col)) // Only include valid columns
+                  .map(col => {
+                    const value = csvRow[col]
+                    if (value === undefined || value === null || value === '') {
+                      return ''
+                    }
+                    
+                    const isNumeric = typeof value === 'number' && !isNaN(value)
+                    const displayValue = isNumeric ? formatNumber(value) : value
+                    const prefix = isNumeric && (col.toLowerCase().includes('revenue') || col.toLowerCase().includes('cost') || col.toLowerCase().includes('price') || col.toLowerCase().includes('amount')) ? '$' : ''
+                    
+                    return `
+                      <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <span style="color: #6b7280; font-size: 12px;">${formatColumnName(col)}:</span>
+                        <span style="color: #111827; font-weight: 500; font-size: 12px;">${prefix}${displayValue}</span>
+                      </div>
+                    `
+                  })
+                  .filter(html => html !== '')
+                  .join('')
 
                 layer.bindPopup(
                   `<div style="font-family: system-ui, -apple-system, sans-serif; min-width: 200px;">
@@ -549,14 +683,7 @@ function App() {
                         <span style="color: #6b7280; font-size: 12px;">ID:</span>
                         <span style="color: #111827; font-weight: 500; font-size: 12px;">${csvRow.id}</span>
                       </div>
-                      <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span style="color: #6b7280; font-size: 12px;">Revenue:</span>
-                        <span style="color: #111827; font-weight: 500; font-size: 12px;">$${formatNumber(csvRow.revenue)}</span>
-                      </div>
-                      <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #6b7280; font-size: 12px;">Cost:</span>
-                        <span style="color: #111827; font-weight: 500; font-size: 12px;">$${formatNumber(csvRow.cost)}</span>
-                      </div>
+                      ${columnContent}
                     </div>
                   </div>`,
                   {
