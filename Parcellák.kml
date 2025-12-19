@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Parcellák</name>
+	<gx:CascadingStyle kml:id="__managed_style_1F163716ED3C57E6F51C">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_37CDFEEA943C57E5C40F">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0BD707E2573C57E6F51C">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1F163716ED3C57E6F51C</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_04424E26C23C57E6F51E</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_29E61C29243C57E5C40F">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+				<displayMode>hide</displayMode>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_04424E26C23C57E6F51E">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_1739644A173C57E5C40F">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_29E61C29243C57E5C40F</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_37CDFEEA943C57E5C40F</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark id="004D45F73D3C57E5C406">
+		<name>Parcella 1</name>
+		<LookAt>
+			<longitude>21.48574374159286</longitude>
+			<latitude>47.55028671378305</latitude>
+			<altitude>121.4159704269809</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>16616.18044290226</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_1739644A173C57E5C40F</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						21.53116200402744,47.55272464806635,0 21.52996057291624,47.54649089118986,0 21.53424461921647,47.54619512748125,0 21.53571507601042,47.55174952400942,0 21.53116200402744,47.55272464806635,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="01CB4DE8913C57E6A249">
+		<name>Parcella 2</name>
+		<LookAt>
+			<longitude>21.48668092427602</longitude>
+			<latitude>47.53878031514646</latitude>
+			<altitude>118.2894365346487</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>16269.78473074269</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0BD707E2573C57E6F51C</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						21.5002414953535,47.52221570405839,0 21.49903550021279,47.51740167267427,0 21.51501565165266,47.51633568222245,0 21.51620416970141,47.52080921834219,0 21.5002414953535,47.52221570405839,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="0FC22F2D963C57E7CE94">
+		<name>Parcella 3</name>
+		<LookAt>
+			<longitude>21.48668092427602</longitude>
+			<latitude>47.53878031514646</latitude>
+			<altitude>118.2894365346487</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>16269.78473074269</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_1739644A173C57E5C40F</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						21.49136768110782,47.50224327876825,0 21.49062919617062,47.49709276043974,0 21.50180645462919,47.49628235503684,0 21.50297564263879,47.50116030693719,0 21.49136768110782,47.50224327876825,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="09A99FD6BC3C57E85A70">
+		<name>Központ</name>
+		<LookAt>
+			<longitude>21.5350497682637</longitude>
+			<latitude>47.52851637413357</latitude>
+			<altitude>112.9735398221389</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>10097.25923053804</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_1739644A173C57E5C40F</styleUrl>
+		<Point>
+			<coordinates>21.56634814778819,47.54670007360337,118.3096148474014</coordinates>
+		</Point>
+	</Placemark>
+	<Placemark id="0BF69CE6C43C57E964CE">
+		<name>Parcella 4</name>
+		<LookAt>
+			<longitude>21.46392396987142</longitude>
+			<latitude>47.51800852990568</latitude>
+			<altitude>115.1725543398953</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>21806.18710995885</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_1739644A173C57E5C40F</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						21.3914812980247,47.50170347195852,0 21.39058472439307,47.46530943709554,0 21.40245388862457,47.4651175591347,0 21.40494518155968,47.46591065201107,0 21.40769832517912,47.46545040111364,0 21.41867168076781,47.48462729015185,0 21.4189775881006,47.48775722419504,0 21.41545950606262,47.48775561957999,0 21.41530410355686,47.50235392929305,0 21.3914812980247,47.50170347195852,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="0BAA998DC73C57EA1AD0">
+		<name>Parcella 5</name>
+		<LookAt>
+			<longitude>21.45688483478913</longitude>
+			<latitude>47.53159505154439</latitude>
+			<altitude>115.2638294916553</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>21806.09514124459</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_1739644A173C57E5C40F</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						21.39061167867789,47.55911458229865,0 21.39197338891988,47.54981587589804,0 21.4347702894222,47.55291587929734,0 21.43890334742796,47.5519028774763,0 21.44636743634746,47.56239474767327,0 21.40996605137173,47.56130630175339,0 21.39061167867789,47.55911458229865,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+</Document>
+</kml>
